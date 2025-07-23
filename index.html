@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Video Editor Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    input, textarea, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #form, #admin-dashboard {
+      display: none;
+    }
+    #popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      font-size: 24px;
+      text-align: center;
+      padding-top: 200px;
+      z-index: 999;
+    }
+    .highlight {
+      color: green;
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 6px;
+      text-align: center;
+    }
+    th {
+      background: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" id="login">
+  <h2>🔐 Login</h2>
+  <input id="username" placeholder="Username"/>
+  <input id="password" type="password" placeholder="Password"/>
+  <button onclick="handleLogin()">Login</button>
+  <p id="login-error" style="color:red;"></p>
+</div>
+
+<div class="container" id="form">
+  <h2>🎬 Submit Weekly Report</h2>
+  <form onsubmit="return submitReport()">
+    <input id="week" placeholder="Week number (e.g., 30)" required />
+    <input id="month" placeholder="Month (e.g., July)" required />
+    <input id="videos" type="number" placeholder="Number of videos" required />
+    <textarea id="titles" placeholder="Video titles (comma separated)"></textarea>
+    <textarea id="notes" placeholder="Extra notes (optional)"></textarea>
+    <input type="hidden" id="editor" />
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<div class="container" id="admin-dashboard">
+  <h2>📊 Admin Dashboard</h2>
+  <div id="report-table"></div>
+</div>
+
+<div id="popup">🎉 Incentive Earned! Great Job!</div>
+
+<script>
+  const users = {
+    "theju0922": "theju0922",
+    "sanadshehin7587": "sanadshehin7587",
+    "afeef1824": "afeef1824",
+    "akhil krishna": "akhil4222"
+  };
+
+  const reports = [];
+
+  function handleLogin() {
+    const u = document.getElementById('username').value.trim().toLowerCase();
+    const p = document.getElementById('password').value.trim();
+    const loginError = document.getElementById('login-error');
+
+    if (users[u] && users[u] === p) {
+      document.getElementById('login').style.display = 'none';
+
+      if (u === "akhil krishna") {
+        showAdmin();
+      } else {
+        document.getElementById('form').style.display = 'block';
+        document.getElementById('editor').value = u;
+      }
+    } else {
+      loginError.innerText = "❌ Invalid credentials";
+    }
+  }
+
+  function submitReport() {
+    const week = document.getElementById('week').value;
+    const month = document.getElementById('month').value;
+    const videos = parseInt(document.getElementById('videos').value);
+    const titles = document.getElementById('titles').value;
+    const notes = document.getElementById('notes').value;
+    const editor = document.getElementById('editor').value;
+
+    const report = {
+      week, month, videos, titles, notes, editor
+    };
+
+    reports.push(report);
+
+    if (videos >= 4) {
+      showPopup();
+    }
+
+    alert("✅ Report submitted!");
+    document.querySelector('form').reset();
+    return false;
+  }
+
+  function showPopup() {
+    const popup = document.getElementById("popup");
+    popup.style.display = "block";
+    setTimeout(() => popup.style.display = "none", 3000);
+  }
+
+  function showAdmin() {
+    document.getElementById('admin-dashboard').style.display = 'block';
+    updateDashboard();
+  }
+
+  function updateDashboard() {
+    let html = `<table>
+      <tr><th>Editor</th><th>Week</th><th>Month</th><th>Videos</th><th>Incentive</th></tr>`;
+    reports.forEach(r => {
+      const earned = r.videos >= 4 ? "✅ <span class='highlight'>Yes</span>" : "❌ No";
+      html += `<tr>
+        <td>${r.editor}</td>
+        <td>${r.week}</td>
+        <td>${r.month}</td>
+        <td>${r.videos}</td>
+        <td>${earned}</td>
+      </tr>`;
+    });
+    html += `</table>`;
+    document.getElementById('report-table').innerHTML = html;
+  }
+</script>
+
+</body>
+</html>
